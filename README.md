@@ -22,8 +22,8 @@ This app can:
 
 ## or Download
 
-[Release](https://github.com/zhaobao/AppsTimeline/releases/tag/v1.0.0)  
-[GooglePlay](https://play.google.com/store/apps/details?id=com.eterno.appmonitor)
+[Release]
+[GooglePlay]
 
 ## Notes
 
@@ -32,7 +32,7 @@ This app can:
 - You can usage this apps without any worry, since i will never collect your information
 
 ## Feedback
-zhishoumowen@gmail.com
+bluedares@gmail.com
 
 ## Thanks
 ![MIT](https://img.shields.io/npm/l/vue.svg)
