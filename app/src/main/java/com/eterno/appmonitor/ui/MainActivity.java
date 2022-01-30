@@ -28,6 +28,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
@@ -45,11 +46,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.eterno.appmonitor.BuildConfig;
 import com.eterno.appmonitor.GlideApp;
 import com.eterno.appmonitor.R;
 import com.eterno.appmonitor.data.AppItem;
 import com.eterno.appmonitor.data.DataManager;
 import com.eterno.appmonitor.db.DbIgnoreExecutor;
+import com.eterno.appmonitor.notification.NotificationMainActivity;
 import com.eterno.appmonitor.service.AlarmService;
 import com.eterno.appmonitor.service.AppService;
 import com.eterno.appmonitor.util.AppUtil;
@@ -69,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
     private int mDay;
     private PackageManager mPackageManager;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +82,16 @@ public class MainActivity extends AppCompatActivity {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         getWindow().setExitTransition(new Fade(Fade.OUT));
         setContentView(R.layout.activity_main);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle("Josh Spy "+(
+                String.format(Locale.getDefault(),
+                    getResources().getString(R.string.version), BuildConfig.VERSION_NAME)));
+            actionBar.setDisplayHomeAsUpEnabled(false);
+        }
+
         mPackageManager = getPackageManager();
 
         mSort = findViewById(R.id.sort_group);
@@ -91,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
         dividerItemDecoration.setDrawable(getResources().getDrawable(R.drawable.divider, getTheme()));
         mList.addItemDecoration(dividerItemDecoration);
         mList.setAdapter(mAdapter);
+
+        findViewById(R.id.switch_activity).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, NotificationMainActivity.class));
+        });
 
         initLayout();
         initEvents();
@@ -235,9 +254,11 @@ public class MainActivity extends AppCompatActivity {
                 process();
                 Toast.makeText(this, R.string.ignore_success, Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.open:
-                startActivity(mPackageManager.getLaunchIntentForPackage(info.mPackageName));
-                return true;
+
+//  App start using the package name
+//            case R.id.open:
+//                startActivity(mPackageManager.getLaunchIntentForPackage(info.mPackageName));
+//                return true;
             case R.id.more:
                 Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + info.mPackageName));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -379,7 +400,8 @@ public class MainActivity extends AppCompatActivity {
                 int position = getAdapterPosition();
                 AppItem item = getItemInfoByPosition(position);
                 contextMenu.setHeaderTitle(item.mName);
-                contextMenu.add(Menu.NONE, R.id.open, position, getResources().getString(R.string.open));
+           //     contextMenu.add(Menu.NONE, R.id.open, position,
+                //    getResources().getString(R.string.open));
                 if (item.mCanOpen) {
                     contextMenu.add(Menu.NONE, R.id.more, position, getResources().getString(R.string.app_info));
                 }

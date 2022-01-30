@@ -1,10 +1,25 @@
 package com.eterno.appmonitor.notification;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+
+import com.eterno.appmonitor.notification.NotificationRepo;
+import com.eterno.appmonitor.util.AppUtil;
+
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+import androidx.annotation.RequiresApi;
 
 /**
  * MIT License
@@ -26,6 +41,7 @@ import android.util.Log;
  * SOFTWARE.
  */
 public class NotificationListenerExampleService extends NotificationListenerService {
+    private NotificationRepo mRepository = new NotificationRepo(AppUtil.getApplication());
 
     /*
         These are the package names of the apps. for which we want to
@@ -60,16 +76,23 @@ public class NotificationListenerExampleService extends NotificationListenerServ
         return super.onBind(intent);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onNotificationPosted(StatusBarNotification sbn){
         Log.d(TAG, "onNotificationPosted : " + sbn.getId() + " pkg: " + sbn.getPackageName());
         Log.d(TAG, "onNotificationPosted : " + sbn.toString());
+
+
+        String date =
+            java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+
         NotificationItem notificationItem = new NotificationItem(sbn.getId(),
-            sbn.getPackageName(), sbn.getTag(), sbn.getKey(), sbn.getGroupKey());
+            sbn.getPackageName(), sbn.getTag(), sbn.getKey(), sbn.getGroupKey(), date);
         notificationItem.setPosted(true);
         Intent intent = new  Intent(APP_PACKAGE_NAME);
         intent.putExtra(NOTIFICATION_DATA, notificationItem);
         sendBroadcast(intent);
+        mRepository.insert(notificationItem);
 
 //        int notificationCode = matchNotificationCode(sbn);
 //

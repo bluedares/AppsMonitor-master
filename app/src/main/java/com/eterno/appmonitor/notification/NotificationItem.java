@@ -2,7 +2,13 @@ package com.eterno.appmonitor.notification;
 
 import java.io.Serializable;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "notification_table")
 public class NotificationItem implements Serializable {
+  @PrimaryKey(autoGenerate = true)
+  private int pkey = 0;
   private int id;
   private String packageName;
   private String tag;
@@ -10,13 +16,16 @@ public class NotificationItem implements Serializable {
   private String groupKey;
   private boolean isPosted;
   private boolean isRemoved;
+  private String time;
 
-  public NotificationItem(int id, String packageName, String tag, String key, String groupKey) {
+  public NotificationItem(int id, String packageName, String tag, String key, String groupKey,
+                          String time) {
     this.id = id;
     this.packageName = packageName;
     this.tag = tag;
     this.key = key;
     this.groupKey = groupKey;
+    this.time = time;
   }
 
   public int getId() {
@@ -73,5 +82,21 @@ public class NotificationItem implements Serializable {
 
   public void setRemoved(boolean removed) {
     isRemoved = removed;
+  }
+
+  public int getPkey() {
+    return pkey;
+  }
+
+  public void setPkey(int pkey) {
+    this.pkey = pkey;
+  }
+
+  public String getTime() {
+    return time;
+  }
+
+  public void setTime(String time) {
+    this.time = time;
   }
 }

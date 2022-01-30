@@ -13,6 +13,7 @@ import com.eterno.appmonitor.data.DataManager;
 import com.eterno.appmonitor.db.DbHistoryExecutor;
 import com.eterno.appmonitor.db.DbIgnoreExecutor;
 import com.eterno.appmonitor.service.AppService;
+import com.eterno.appmonitor.util.AppUtil;
 import com.eterno.appmonitor.util.CrashHandler;
 import com.eterno.appmonitor.util.PreferenceManager;
 
@@ -27,6 +28,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         PreferenceManager.init(this);
+        AppUtil.setApplication(this);
         getApplicationContext().startService(new Intent(getApplicationContext(), AppService.class));
         DbIgnoreExecutor.init(getApplicationContext());
         DbHistoryExecutor.init(getApplicationContext());
