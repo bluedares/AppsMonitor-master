@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "781871329003",
+    "firebase_url": "https://timepass-b3367.firebaseio.com",
+    "project_id": "timepass-b3367",
+    "storage_bucket": "timepass-b3367.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781871329003:android:6234b1f1f609cdaa9818ae",
+        "android_client_info": {
+          "package_name": "com.eterno.appmonitor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781871329003-1b8nt5a6l8qo577sf39q0kiquf3rj5oj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCU0lR82DRlDnWsSRflRLwUB_2sDElHZcE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781871329003-1b8nt5a6l8qo577sf39q0kiquf3rj5oj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781871329003:android:373972aa96187b239818ae",
+        "android_client_info": {
+          "package_name": "timeline.lizimumu.com.t"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781871329003-1b8nt5a6l8qo577sf39q0kiquf3rj5oj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCU0lR82DRlDnWsSRflRLwUB_2sDElHZcE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781871329003-1b8nt5a6l8qo577sf39q0kiquf3rj5oj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
