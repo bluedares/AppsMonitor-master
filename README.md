@@ -1,5 +1,5 @@
 # AppsMonitor
-Android apps for monitoring apps usage on your device
+Android Application for monitoring other apps usage and notifications on your device
 
 ## What does this App do ?
 
@@ -7,6 +7,7 @@ This app can:
 
 - monitor each App usage time
 - monitor each App traffic usage
+- monitor each App notification received
 
 ## Screen shortcut
 
