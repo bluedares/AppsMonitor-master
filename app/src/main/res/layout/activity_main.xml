@@ -29,7 +29,7 @@
             android:paddingEnd="16dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/enable_apps_monitor"
+            android:text="@string/enable_josh_spy"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 

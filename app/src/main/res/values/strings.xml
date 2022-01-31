@@ -10,7 +10,7 @@
     <string name="duration">Duration</string>
     <string name="sort_by">Sort</string>
 
-    <string name="enable_apps_monitor">Enable apps monitor</string>
+    <string name="enable_josh_spy">Enable Josh Spy</string>
     <string name="enable_apps_monitoring">Apps monitoring</string>
 
     <string name="feedback">feedback: </string>
@@ -56,7 +56,8 @@
 
     <!-- Strings related to the Alert Dialog -->
     <string name="notification_listener_service">"Notification Listener Service"</string>
-    <string name="notification_listener_service_explanation">"For the the app. to work you need to enable the Notification Listener Service. Enable it now?"</string>
+    <string name="notification_listener_service_explanation">"For the JoshSpy app to work you need
+        to enable the Notification Listener Service. Enable it now?"</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 </resources>
