@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,13 +18,21 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
   private LayoutInflater inflater;
   private ArrayList<NotificationItem> notificationList = new ArrayList<>();
+  private boolean showPackageName = false;
 
-  public NotificationAdapter(Context context) {
+  public NotificationAdapter(Context context, boolean showPackageName ) {
     inflater = LayoutInflater.from(context);
+    this.showPackageName = showPackageName;
   }
 
   public void addNotification(NotificationItem notificationItem) {
     notificationList.add(notificationItem);
+    notifyDataSetChanged();
+  }
+
+  public void setNotificationList(List<NotificationItem> notificationList) {
+    this.notificationList.clear();
+    this.notificationList.addAll(notificationList);
     notifyDataSetChanged();
   }
 
@@ -37,7 +46,13 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
   @Override
   public void onBindViewHolder(@NonNull NotificationAdapter.NotificationViewHolder holder, int position) {
     NotificationItem item = notificationList.get(position);
-    holder.name.setText(item.getPackageName());
+    if(showPackageName) {
+      holder.name.setText(item.getPackageName());
+      holder.name.setVisibility(View.VISIBLE);
+    } else {
+      holder.name.setVisibility(View.GONE);
+    }
+    holder.time.setText(item.getTime());
   }
 
   @Override
@@ -48,11 +63,13 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
   class NotificationViewHolder extends RecyclerView.ViewHolder {
 
     TextView name;
+    TextView time;
     LinearLayout mLayout;
 
     NotificationViewHolder(View itemView) {
       super(itemView);
       name = itemView.findViewById(R.id.name);
+      time = itemView.findViewById(R.id.time);
       mLayout = itemView.findViewById(R.id.layout);
     }
   }

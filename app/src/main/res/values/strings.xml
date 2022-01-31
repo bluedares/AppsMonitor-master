@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about">About</string>
-    <string name="app_name">AppsMonitor</string>
+    <string name="app_name">Josh Spy</string>
     <string name="service_label">NotificationListenerService</string>
 
     <string name="close">Close</string>
@@ -33,6 +33,7 @@
     <string name="not_support">You device not support monitoring</string>
 
     <string name="open">Open</string>
+    <string name="show_noti">Notifications</string>
 
     <string name="refresh">Refresh</string>
 

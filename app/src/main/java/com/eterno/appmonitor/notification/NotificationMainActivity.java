@@ -10,6 +10,9 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eterno.appmonitor.R;
@@ -46,18 +49,23 @@ public class NotificationMainActivity extends AppCompatActivity {
     private ImageChangeBroadcastReceiver imageChangeBroadcastReceiver;
     private AlertDialog enableNotificationListenerAlertDialog;
     private NotificationAdapter notificationAdapter;
-
+    private String appPkgName = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getArguments();
         setContentView(R.layout.activity_notification_main);
 
-        notificationAdapter = new NotificationAdapter(this);
+        notificationAdapter = new NotificationAdapter(this, (appPkgName == null));
         notificationList
                 = (RecyclerView) this.findViewById(R.id.notification_list);
+        if(appPkgName != null ){
+            ((TextView) findViewById(R.id.notification_package)).setText(appPkgName);
+            ((TextView) findViewById(R.id.notification_package)).setVisibility(View.VISIBLE);
+        }
         notificationList.setLayoutManager(new LinearLayoutManager(this));
         notificationList.setAdapter(notificationAdapter);
-
+        setNotificationsObserver();
         // If the user did not turn the notification listener service on we prompt him to do so
         if(!isNotificationServiceEnabled()){
             enableNotificationListenerAlertDialog = buildNotificationServiceAlertDialog();
@@ -69,6 +77,30 @@ public class NotificationMainActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(NotificationListenerExampleService.APP_PACKAGE_NAME);
         registerReceiver(imageChangeBroadcastReceiver,intentFilter);
+    }
+
+    private void getArguments() {
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            appPkgName = extras.getString("package_name");
+        }
+    }
+
+    private void setNotificationsObserver() {
+        NotificationRepo notificationRepo = new NotificationRepo(this.getApplication());
+         if(appPkgName != null && !appPkgName.equals("")) {
+            notificationRepo.getPkgAllNotifications(appPkgName).observe(this, notificationItems -> {
+                if (notificationItems == null || notificationItems.size() == 0) {
+                    Toast.makeText(this, "No Notifications to show", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                notificationAdapter.setNotificationList(notificationItems);
+            });
+        } else {
+            notificationRepo.getmAllNotifications().observe(this, notificationItems -> {
+                notificationAdapter.setNotificationList(notificationItems);
+            });
+        }
     }
 
     @Override
@@ -136,7 +168,7 @@ public class NotificationMainActivity extends AppCompatActivity {
                 NotificationItem notification =
                     (NotificationItem) intent.getSerializableExtra(NotificationListenerExampleService.NOTIFICATION_DATA);
                 if (notification != null) {
-                    notificationAdapter.addNotification(notification);
+                  //  notificationAdapter.addNotification(notification);
                     Toast.makeText(context, "receivedNotification : " + notification.getPackageName(),
                         Toast.LENGTH_SHORT).show();
                 } else {

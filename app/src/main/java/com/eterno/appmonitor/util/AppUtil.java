@@ -1,5 +1,6 @@
 package com.eterno.appmonitor.util;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -20,6 +21,16 @@ import com.eterno.appmonitor.R;
 public final class AppUtil {
 
     private static final long A_DAY = 86400 * 1000;
+    private static Application application;
+
+    public static void setApplication(Application appln) {
+        application = appln;
+    }
+
+    public static Application getApplication() {
+        return application;
+    }
+
 
     public static String parsePackageName(PackageManager pckManager, String data) {
         ApplicationInfo applicationInformation;

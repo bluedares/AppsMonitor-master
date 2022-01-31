@@ -45,6 +45,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.eterno.appmonitor.GlideApp;
+import com.eterno.appmonitor.notification.NotificationMainActivity;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -59,7 +61,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.eterno.appmonitor.GlideApp;
 import com.eterno.appmonitor.R;
 import com.eterno.appmonitor.data.AppItem;
 import com.eterno.appmonitor.data.DataManager;
@@ -121,19 +122,17 @@ public class DetailActivity extends AppCompatActivity {
             // time
             mTime = findViewById(R.id.time);
             // action
-            final Button mOpenButton = findViewById(R.id.open);
-            final Intent LaunchIntent = getPackageManager().getLaunchIntentForPackage(mPackageName);
-            if (LaunchIntent == null) {
-                mOpenButton.setClickable(false);
-                mOpenButton.setAlpha(0.5f);
-            } else {
-                mOpenButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        startActivity(LaunchIntent);
-                    }
-                });
-            }
+            final Button mShowNoti = findViewById(R.id.show_noti);
+
+            mShowNoti.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(DetailActivity.this, NotificationMainActivity.class);
+                    i.putExtra("package_name",mPackageName);
+                    startActivity(i);
+                }
+            });
+
             // list
             RecyclerView mList = findViewById(R.id.list);
             mList.setLayoutManager(new LinearLayoutManager(this));
@@ -164,7 +163,7 @@ public class DetailActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         // ignore
                     }
-                    mOpenButton.getBackground().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+                    mShowNoti.getBackground().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
                     mProgress.getIndeterminateDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
                 }
             });
