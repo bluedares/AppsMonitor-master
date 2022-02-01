@@ -28,11 +28,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.eterno.appmonitor.AppConst;
-import com.eterno.appmonitor.db.DbIgnoreExecutor;
-import com.eterno.appmonitor.util.AppUtil;
-import com.eterno.appmonitor.util.PreferenceManager;
-import com.eterno.appmonitor.util.SortEnum;
+
+import com.eterno.joshspy.AppConst;
+import com.eterno.joshspy.data.AppItem;
+import com.eterno.joshspy.data.IgnoreItem;
+import com.eterno.joshspy.db.DbIgnoreExecutor;
+import com.eterno.joshspy.util.AppUtil;
+import com.eterno.joshspy.util.PreferenceManager;
+import com.eterno.joshspy.util.SortEnum;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 

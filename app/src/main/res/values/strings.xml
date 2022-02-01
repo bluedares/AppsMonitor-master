@@ -56,8 +56,10 @@
 
     <!-- Strings related to the Alert Dialog -->
     <string name="notification_listener_service">"Notification Listener Service"</string>
-    <string name="notification_listener_service_explanation">"For the JoshSpy app to work you need
-        to enable the Notification Listener Service. Enable it now?"</string>
+    <string name="notification_listener_service_explanation">"For the JoshSpy app to work you need to enable the Notification Listener Service. Enable it now?"</string>
+    <string name="enable_joshspy_explanation">"For the JoshSpy app to work you need to enable Usage data access. Enable it now?"</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="notification_list_title">Notification List [%1$s]</string>
+    <string name="last_updated_db_time">last_updated_db_time</string>
 </resources>
