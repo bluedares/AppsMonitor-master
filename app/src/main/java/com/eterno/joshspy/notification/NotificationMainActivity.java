@@ -1,5 +1,6 @@
 package com.eterno.joshspy.notification;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -44,8 +45,10 @@ public class NotificationMainActivity extends AppCompatActivity {
 
     private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
+    private static final String NOTIFICATION_TITLE = "Notification Title";
 
     private RecyclerView notificationList;
+    private TextView title;
     private ImageChangeBroadcastReceiver imageChangeBroadcastReceiver;
     private AlertDialog enableNotificationListenerAlertDialog;
     private NotificationAdapter notificationAdapter;
@@ -59,6 +62,8 @@ public class NotificationMainActivity extends AppCompatActivity {
         notificationAdapter = new NotificationAdapter(this, (appPkgName == null));
         notificationList
                 = (RecyclerView) this.findViewById(R.id.notification_list);
+
+        title = ((TextView) findViewById(R.id.notification_title));
         if(appPkgName != null ){
             ((TextView) findViewById(R.id.notification_package)).setText(appPkgName);
             ((TextView) findViewById(R.id.notification_package)).setVisibility(View.VISIBLE);
@@ -95,10 +100,15 @@ public class NotificationMainActivity extends AppCompatActivity {
                     return;
                 }
                 notificationAdapter.setNotificationList(notificationItems);
+
+                title.setText(getResources().getString(R.string.notification_list_title,
+                    String.valueOf(notificationAdapter.getItemCount())));
             });
         } else {
             notificationRepo.getmAllNotifications().observe(this, notificationItems -> {
                 notificationAdapter.setNotificationList(notificationItems);
+                title.setText(getResources().getString(R.string.notification_list_title,
+                    String.valueOf(notificationAdapter.getItemCount())));
             });
         }
     }

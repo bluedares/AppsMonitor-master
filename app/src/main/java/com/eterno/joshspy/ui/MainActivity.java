@@ -1,12 +1,15 @@
 package com.eterno.joshspy.ui;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.transition.Fade;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -19,7 +22,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -61,16 +64,23 @@ import com.eterno.joshspy.util.PreferenceManager;
 public class MainActivity extends AppCompatActivity {
 
     private LinearLayout mSort;
-    private Switch mSwitch;
-    private TextView mSwitchText;
     private RecyclerView mList;
     private MyAdapter mAdapter;
     private AlertDialog mDialog;
+    private Button mEnableJoshSpy;
+    private Button mShowNoti;
     private SwipeRefreshLayout mSwipe;
     private TextView mSortName;
     private long mTotal;
     private int mDay;
     private PackageManager mPackageManager;
+
+    private android.app.AlertDialog enableNotificationListenerAlertDialog;
+    private android.app.AlertDialog enableJoshSpyAlertDialog;
+
+
+    private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
+    private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
 
 
 
@@ -96,8 +106,11 @@ public class MainActivity extends AppCompatActivity {
 
         mSort = findViewById(R.id.sort_group);
         mSortName = findViewById(R.id.sort_name);
-        mSwitch = findViewById(R.id.enable_switch);
-        mSwitchText = findViewById(R.id.enable_text);
+        mShowNoti = findViewById(R.id.switch_activity);
+        mEnableJoshSpy = findViewById(R.id.enable_permissions);
+        mEnableJoshSpy.setOnClickListener(view ->{
+            checkPermissions();
+        });
         mAdapter = new MyAdapter();
 
         mList = findViewById(R.id.list);
@@ -116,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         initSpinner();
         initSort();
 
-        if (DataManager.getInstance().hasPermission(getApplicationContext())) {
+        if (hasAllPermissions()) {
             process();
             startService(new Intent(this, AlarmService.class));
         }
@@ -124,22 +137,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void initLayout() {
         mSwipe = findViewById(R.id.swipe_refresh);
-        if (DataManager.getInstance().hasPermission(getApplicationContext())) {
-            mSwitchText.setText(R.string.enable_apps_monitoring);
-            mSwitch.setVisibility(View.GONE);
+        if (hasAllPermissions()) {
+            mEnableJoshSpy.setVisibility(View.GONE);
+            mShowNoti.setVisibility(View.VISIBLE);
             mSort.setVisibility(View.VISIBLE);
             mSwipe.setEnabled(true);
         } else {
             mEnableJoshSpy.setVisibility(View.VISIBLE);
             mShowNoti.setVisibility(View.GONE);
             mSort.setVisibility(View.GONE);
-            mSwitch.setChecked(false);
             mSwipe.setEnabled(false);
         }
     }
 
     private void initSort() {
-        if (DataManager.getInstance().hasPermission(getApplicationContext())) {
+        if (hasAllPermissions()) {
             mSort.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -165,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSpinner() {
-        if (DataManager.getInstance().hasPermission(getApplicationContext())) {
+        if (hasAllPermissions()) {
             Spinner spinner = findViewById(R.id.spinner);
             spinner.setVisibility(View.VISIBLE);
             ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -189,19 +201,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initEvents() {
-        if (!DataManager.getInstance().hasPermission(getApplicationContext())) {
-            mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (b) {
-                        Intent intent = new Intent(MainActivity.this, AppService.class);
-                        intent.putExtra(AppService.SERVICE_ACTION, AppService.SERVICE_ACTION_CHECK);
-                        startService(intent);
-                    }
-                }
-            });
+    private void checkPermissions() {
+        if (!hasAllPermissions()) {
+            if (!isJoshAppEnabled()) {
+                enableJoshSpyAlertDialog = buildAppServiceAlertDialog();
+                enableJoshSpyAlertDialog.show();
+            } else {
+                enableNotificationListenerAlertDialog = buildNotificationServiceAlertDialog();
+                enableNotificationListenerAlertDialog.show();
+            }
+        }else {
+            process();
         }
+    }
+
+
+    private void initEvents() {
+        checkPermissions();
         mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -213,18 +229,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (!DataManager.getInstance().hasPermission(getApplicationContext())) {
-            mSwitch.setChecked(false);
+        if (hasAllPermissions()) {
+            mEnableJoshSpy.setVisibility(View.GONE);
+            mShowNoti.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (DataManager.getInstance().hasPermission(this)) {
+        if (hasAllPermissions()) {
             mSwipe.setEnabled(true);
             mSort.setVisibility(View.VISIBLE);
-            mSwitch.setVisibility(View.GONE);
+            mEnableJoshSpy.setVisibility(View.GONE);
+            mShowNoti.setVisibility(View.VISIBLE);
             initSpinner();
             initSort();
             process();
@@ -232,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void process() {
-        if (DataManager.getInstance().hasPermission(getApplicationContext())) {
+        if (hasAllPermissions()) {
             mList.setVisibility(View.INVISIBLE);
             int sortInt = PreferenceManager.getInstance().getInt(PreferenceManager.PREF_LIST_SORT);
             mSortName.setText(getSortName(sortInt));
@@ -433,7 +451,6 @@ public class MainActivity extends AppCompatActivity {
                 mTotal += item.mUsageTime;
                 item.mCanOpen = mPackageManager.getLaunchIntentForPackage(item.mPackageName) != null;
             }
-            mSwitchText.setText(String.format(getResources().getString(R.string.total), AppUtil.formatMilliSeconds(mTotal)));
             mSwipe.setRefreshing(false);
             mAdapter.updateData(appItems);
         }
