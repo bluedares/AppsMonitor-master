@@ -62,6 +62,11 @@ public final class AppUtil {
 
     public static String formatMilliSeconds(long milliSeconds) {
         long second = milliSeconds / 1000L;
+        if (second == 0) {
+            //Convert to decimal
+            float decSeconds = (float) milliSeconds / 1000.0F;
+            return String.format("%ss", decSeconds);
+        }
         if (second < 60) {
             return String.format("%ss", second);
         } else if (second < 60 * 60) {
