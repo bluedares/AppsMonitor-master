@@ -1,10 +1,14 @@
 package com.eterno.joshspy.ui;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.Settings;
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -14,11 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eterno.joshspy.R;
+import com.eterno.joshspy.app.BackUpDataActivity;
+import com.eterno.joshspy.data.DataManager;
 import com.eterno.joshspy.log.FileLogManager;
-import com.eterno.joshspy.util.AppUtil;
 
 public class SplashActivity extends AppCompatActivity {
-
+    private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,15 +36,18 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void delayEnter() {
-        new CountDownTimer(1200, 1200) {
+        new CountDownTimer(700, 700) {
             @Override
             public void onTick(long l) {
             }
 
             @Override
             public void onFinish() {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-//                startActivity(new Intent(SplashActivity.this, NotificationMainActivity.class));
+                if(hasAllPermissions()){
+                    startActivity(new Intent(SplashActivity.this, BackUpDataActivity.class));
+                }else{
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                }
                 finish();
             }
         }.start();
@@ -75,4 +83,31 @@ public class SplashActivity extends AppCompatActivity {
         }
         delayEnter();
     }
+
+    private boolean isNotificationServiceEnabled(){
+        String pkgName = getPackageName();
+        final String flat = Settings.Secure.getString(getContentResolver(),
+            ENABLED_NOTIFICATION_LISTENERS);
+        if (!TextUtils.isEmpty(flat)) {
+            final String[] names = flat.split(":");
+            for (int i = 0; i < names.length; i++) {
+                final ComponentName cn = ComponentName.unflattenFromString(names[i]);
+                if (cn != null) {
+                    if (TextUtils.equals(pkgName, cn.getPackageName())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasAllPermissions(){
+        return (isJoshAppEnabled() && isNotificationServiceEnabled());
+    }
+
+    private boolean isJoshAppEnabled(){
+        return (DataManager.getInstance().hasPermission(getApplicationContext()));
+    }
+
 }

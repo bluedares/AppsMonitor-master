@@ -62,4 +62,6 @@
     <string name="no">No</string>
     <string name="notification_list_title">Notification List [%1$s]</string>
     <string name="last_updated_db_time">last_updated_db_time</string>
+    <string name="last_updated_time_key">LAST_UPDATED_TIME_KEY</string>
+    <string name="last_updated_app_open_event">LAST_UPDATED_APP_OPEN_EVENT</string>
 </resources>

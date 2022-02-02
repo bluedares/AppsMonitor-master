@@ -6,7 +6,7 @@ import android.content.Intent;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eterno.appmonitor.data.DataManager;
+import com.eterno.joshspy.data.DataManager;
 import com.eterno.joshspy.AppConst;
 import com.eterno.joshspy.BuildConfig;
 import com.eterno.joshspy.data.AppItem;

@@ -92,7 +92,7 @@ dependencies {
 
 
 
-
+    implementation 'com.google.code.gson:gson:2.8.9'
 }
 
 apply plugin: 'com.google.gms.google-services'

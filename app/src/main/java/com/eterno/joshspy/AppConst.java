@@ -13,4 +13,6 @@ public final class AppConst {
     public static final String BUG_KEY = "4a59b2abb6";
     public static final String LOG_DIR = "com.lizimumu.timeline.t";
     public static final long REMOTE_CONFIG_CACHE_TIME = 6 * 60 * 60;
+    public static final String APP_SCRIPT_URL = "https://script.google" +
+        ".com/macros/s/AKfycbzSEIA0pPYfa-i7lIL5pMwnNizd3EIN93OCHOfaRazgZTnavcCap76BkHAX12Laiy87Qg/exec";
 }

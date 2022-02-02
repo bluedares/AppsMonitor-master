@@ -7,9 +7,13 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
+import com.eterno.joshspy.R;
 import com.eterno.joshspy.R;
 
 
@@ -29,6 +33,10 @@ public final class AppUtil {
 
     public static Application getApplication() {
         return application;
+    }
+
+    public static String getClientId() {
+        return UUID.randomUUID().toString();
     }
 
 
@@ -62,7 +70,10 @@ public final class AppUtil {
             return String.format("%sh %sm %ss", second / 3600, second % (3600) / 60, second % (3600) % 60);
         }
     }
-
+    public static String formatTimeStamp(long milliSeconds) {
+        return
+        new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.getDefault()).format(new Date(milliSeconds));
+    }
     public static boolean isSystemApp(PackageManager manager, String packageName) {
 
         boolean isSystemApp = false;
