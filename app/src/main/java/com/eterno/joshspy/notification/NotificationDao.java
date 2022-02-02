@@ -21,4 +21,7 @@ public interface NotificationDao {
 
   @Query("SELECT * FROM notification_table WHERE packageName = :pkgName ORDER BY pkey DESC")
   LiveData<List<NotificationItem>> getPkgNotifications(String pkgName);
+
+  @Query("SELECT COUNT(packageName) FROM notification_table WHERE packageName = :pkgName")
+  int getTotalNotificationsForApp(String pkgName);
 }

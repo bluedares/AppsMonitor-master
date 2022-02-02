@@ -7,12 +7,12 @@ import java.util.List;
 
 import androidx.lifecycle.LiveData;
 
-class NotificationRepo {
+public class NotificationRepo {
 
   private NotificationDao notificationDao;
   private LiveData<List<NotificationItem>> mAllNotifications;
 
-  NotificationRepo(Application application) {
+  public NotificationRepo(Application application) {
     if (application != null) {
       NotificationDatabase db = NotificationDatabase.getDatabase(application);
       notificationDao = db.notificationDao();
@@ -26,6 +26,10 @@ class NotificationRepo {
 
   LiveData<List<NotificationItem>> getPkgAllNotifications(String pkg) {
     return notificationDao.getPkgNotifications(pkg);
+  }
+
+  public int getTotalNotificationsForApp(String pkg) {
+    return notificationDao.getTotalNotificationsForApp(pkg);
   }
 
   void insert(NotificationItem notificationItem) {

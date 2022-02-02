@@ -2,30 +2,31 @@ package com.eterno.joshspy.data;
 
 import com.eterno.joshspy.util.AppUtil;
 
-import java.util.Locale;
-
 /**
- * App Item
- * Created by zb on 18/12/2017.
+ * Created by AJAY
  */
 
 public class SheetAppItem {
   public String mName;
   public String mPackageName;
-  public String mEventTime;
-  public String mUsageTime;
-  public String mStartTime;
+  public int mTimesOpened;
+  public long mUsageTime;
+  public int mFGServiceCount;
+  public int mNotiCount;
+  public long mMobile;
+  public long mWifi;
 
-
-  public static SheetAppItem getSheetAppItem(AppItem item, long startTime) {
-    SheetAppItem newItem = new SheetAppItem();
-    newItem.mName = item.mName;
-    newItem.mPackageName = item.mPackageName;
-    newItem.mStartTime = AppUtil.formatTimeStamp(startTime);
-    newItem.mEventTime = AppUtil.formatTimeStamp(item.mEventTime);
-    newItem.mUsageTime = AppUtil.formatMilliSeconds(item.mUsageTime);
-
-    return newItem;
+  public SheetAppItem(String mName, String mPackageName, int mTimesOpened,
+                      long mUsageTime, int mFGServiceCount, int mNotiCount, long mMobile,
+                      long mWifi) {
+    this.mName = mName;
+    this.mPackageName = mPackageName;
+    this.mTimesOpened = mTimesOpened;
+    this.mUsageTime =  mUsageTime;
+    this.mFGServiceCount = mFGServiceCount;
+    this.mNotiCount = mNotiCount;
+    this.mMobile = mMobile;
+    this.mWifi = mWifi;
   }
 
 }

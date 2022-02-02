@@ -272,7 +272,7 @@ public class DataManager {
         return newList;
     }
 
-    private Map<String, Long> getMobileData(Context context, TelephonyManager tm,
+    public static Map<String, Long>  getMobileData(Context context, TelephonyManager tm,
                                             NetworkStatsManager nsm, long start, long end) {
         Map<String, Long> result = new HashMap<>();
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
@@ -361,5 +361,86 @@ public class DataManager {
             timeStamp = event.getTimeStamp();
             eventType = event.getEventType();
         }
+    }
+
+    public HashMap<String, Integer> getAppsFGServiceRange(Context context, long start, long end) {
+        HashMap<String, Integer> map = new HashMap<>();
+        UsageStatsManager manager =
+            (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
+        if (manager != null) {
+            UsageEvents events = manager.queryEvents(start, end);
+            UsageEvents.Event event = new UsageEvents.Event();
+            while (events.hasNextEvent()) {
+                // 解析时间
+                events.getNextEvent(event);
+                int eventType = event.getEventType();
+                String eventPackage = event.getPackageName();
+                // 开始点设置
+                if (eventType == UsageEvents.Event.FOREGROUND_SERVICE_START ||
+                    eventType == UsageEvents.Event.FOREGROUND_SERVICE_STOP) {
+                    map.put(eventPackage, 0);
+                }
+            }
+        }
+        return map;
+    }
+
+    public List<AppItem> getTargetAppFGTimelineRange(Context context, String target, long begin,
+                                                    long end){
+
+        List<AppItem> items = new ArrayList<>();
+        UsageStatsManager manager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
+        if (manager != null) {
+            UsageEvents events = manager.queryEvents(begin, end);
+            UsageEvents.Event event = new UsageEvents.Event();
+
+            AppItem item = new AppItem();
+            item.mPackageName = target;
+            item.mName = AppUtil.parsePackageName(context.getPackageManager(), target);
+
+            // 缓存
+            ClonedEvent prevEndEvent = null;
+            long start = 0;
+
+            while (events.hasNextEvent()) {
+                events.getNextEvent(event);
+                String currentPackage = event.getPackageName();
+                int eventType = event.getEventType();
+                long eventTime = event.getTimeStamp();
+                Log.d("||||------>", currentPackage + " " + target + " " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault()).format(new Date(eventTime)) + " " + eventType);
+                if (currentPackage.equals(target)) { // 本次交互开始
+                    Log.d("||||||||||>", currentPackage + " " + target + " " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault()).format(new Date(eventTime)) + " " + eventType);
+                    // 记录第一次开始时间
+                    if (eventType == UsageEvents.Event.FOREGROUND_SERVICE_START) {
+                        Log.d("********", "start " + start);
+                        if (start == 0) {
+                            start = eventTime;
+                            item.mEventTime = eventTime;
+                            item.mEventType = eventType;
+                            item.mUsageTime = 0;
+                            items.add(item.copy());
+                        }
+                    } else if (eventType == UsageEvents.Event.FOREGROUND_SERVICE_STOP) { // 结束事件
+                        if (start > 0) {
+                            prevEndEvent = new ClonedEvent(event);
+                        }
+                        Log.d("********", "add end " + start);
+                    }
+                } else {
+                    // 记录最后一次结束事件
+                    if (prevEndEvent != null && start > 0) {
+                        item.mEventTime = prevEndEvent.timeStamp;
+                        item.mEventType = prevEndEvent.eventType;
+                        item.mUsageTime = prevEndEvent.timeStamp - start;
+                        if (item.mUsageTime <= 0) item.mUsageTime = 0;
+                        if (item.mUsageTime > AppConst.USAGE_TIME_MIX) item.mCount++;
+                        items.add(item.copy());
+                        start = 0;
+                        prevEndEvent = null;
+                    }
+                }
+            }
+        }
+        return items;
     }
 }
