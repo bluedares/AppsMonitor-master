@@ -360,7 +360,10 @@ public class MainActivity extends AppCompatActivity {
                     item.mCount,
                     getResources().getString(R.string.times_only))
             );
-            holder.mDataUsage.setText(String.format(Locale.getDefault(), "%s", AppUtil.humanReadableByteCount(item.mMobile)));
+            holder.mDataUsage.setText(String.format(Locale.getDefault(),
+                getResources().getString(R.string.wifi_data),
+                AppUtil.humanReadableByteCount(item.mWifi),
+                AppUtil.humanReadableByteCount(item.mMobile)));
             if (mTotal > 0) {
                 holder.mProgress.setProgress((int) (item.mUsageTime * 100 / mTotal));
             } else {
