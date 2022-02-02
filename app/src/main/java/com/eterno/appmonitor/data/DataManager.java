@@ -1,4 +1,4 @@
-package com.eterno.appmonitor.data;
+package com.eterno.joshspy.data;
 
 import android.Manifest;
 import android.app.AppOpsManager;
@@ -28,10 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
 import com.eterno.joshspy.AppConst;
-import com.eterno.joshspy.data.AppItem;
-import com.eterno.joshspy.data.IgnoreItem;
 import com.eterno.joshspy.db.DbIgnoreExecutor;
 import com.eterno.joshspy.util.AppUtil;
 import com.eterno.joshspy.util.PreferenceManager;
@@ -72,12 +69,16 @@ public class DataManager {
     }
 
     public List<AppItem> getTargetAppTimeline(Context context, String target, int offset) {
+        long[] range = AppUtil.getTimeRange(SortEnum.getSortEnum(offset));
+        return getTargetAppTimelineRange(context, target, range[0], range[1]);
+    }
+
+    public List<AppItem> getTargetAppTimelineRange(Context context, String target, long begin, long end){
+
         List<AppItem> items = new ArrayList<>();
         UsageStatsManager manager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
         if (manager != null) {
-
-            long[] range = AppUtil.getTimeRange(SortEnum.getSortEnum(offset));
-            UsageEvents events = manager.queryEvents(range[0], range[1]);
+            UsageEvents events = manager.queryEvents(begin, end);
             UsageEvents.Event event = new UsageEvents.Event();
 
             AppItem item = new AppItem();
@@ -131,6 +132,11 @@ public class DataManager {
     }
 
     public List<AppItem> getApps(Context context, int sort, int offset) {
+        long[] range = AppUtil.getTimeRange(SortEnum.getSortEnum(offset));
+        return getAppsRange(context, sort, range[0], range[1]);
+    }
+
+    public List<AppItem> getAppsRange(Context context, int sort, long start, long end) {
 
         List<AppItem> items = new ArrayList<>();
         List<AppItem> newList = new ArrayList<>();
@@ -141,8 +147,8 @@ public class DataManager {
             Map<String, Long> startPoints = new HashMap<>();
             Map<String, ClonedEvent> endPoints = new HashMap<>();
             // 获取事件
-            long[] range = AppUtil.getTimeRange(SortEnum.getSortEnum(offset));
-            UsageEvents events = manager.queryEvents(range[0], range[1]);
+
+            UsageEvents events = manager.queryEvents(start, end);
             UsageEvents.Event event = new UsageEvents.Event();
             while (events.hasNextEvent()) {
                 // 解析时间
@@ -198,7 +204,7 @@ public class DataManager {
                 valid = true;
                 NetworkStatsManager networkStatsManager = (NetworkStatsManager) context.getSystemService(Context.NETWORK_STATS_SERVICE);
                 TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                mobileData = getMobileData(context, telephonyManager, networkStatsManager, offset);
+                mobileData = getMobileData(context, telephonyManager, networkStatsManager, start, end);
             }
 
             boolean hideSystem = PreferenceManager.getInstance().getBoolean(PreferenceManager.PREF_SETTINGS_HIDE_SYSTEM_APPS);
@@ -261,14 +267,14 @@ public class DataManager {
         return newList;
     }
 
-    private Map<String, Long> getMobileData(Context context, TelephonyManager tm, NetworkStatsManager nsm, int offset) {
+    private Map<String, Long> getMobileData(Context context, TelephonyManager tm,
+                                            NetworkStatsManager nsm, long start, long end) {
         Map<String, Long> result = new HashMap<>();
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-            long[] range = AppUtil.getTimeRange(SortEnum.getSortEnum(offset));
             NetworkStats networkStatsM;
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    networkStatsM = nsm.querySummary(ConnectivityManager.TYPE_MOBILE, null, range[0], range[1]);
+                    networkStatsM = nsm.querySummary(ConnectivityManager.TYPE_MOBILE, null, start, end);
                     if (networkStatsM != null) {
                         while (networkStatsM.hasNextBucket()) {
                             NetworkStats.Bucket bucket = new NetworkStats.Bucket();

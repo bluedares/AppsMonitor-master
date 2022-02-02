@@ -45,8 +45,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.eterno.appmonitor.data.DataManager;
+import com.eterno.joshspy.R;
 import com.eterno.joshspy.GlideApp;
+import com.eterno.joshspy.data.DataManager;
 import com.eterno.joshspy.notification.NotificationMainActivity;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -62,7 +63,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.eterno.joshspy.R;
 import com.eterno.joshspy.data.AppItem;
 import com.eterno.joshspy.db.DbIgnoreExecutor;
 import com.eterno.joshspy.util.AppUtil;

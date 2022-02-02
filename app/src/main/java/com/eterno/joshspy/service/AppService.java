@@ -10,8 +10,8 @@ import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.eterno.appmonitor.data.DataManager;
 import com.eterno.joshspy.R;
+import com.eterno.joshspy.data.DataManager;
 import com.eterno.joshspy.ui.MainActivity;
 
 public class AppService extends Service {

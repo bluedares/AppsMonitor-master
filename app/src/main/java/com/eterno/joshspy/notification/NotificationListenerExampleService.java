@@ -7,6 +7,7 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
+import com.eterno.joshspy.helper.SendNotificationDataToSheet;
 import com.eterno.joshspy.util.AppUtil;
 
 import java.util.Calendar;
@@ -85,14 +86,12 @@ public class NotificationListenerExampleService extends NotificationListenerServ
         intent.putExtra(NOTIFICATION_DATA, notificationItem);
         sendBroadcast(intent);
         mRepository.insert(notificationItem);
-
-//        int notificationCode = matchNotificationCode(sbn);
-//
-//        if(notificationCode != InterceptedNotificationCode.OTHER_NOTIFICATIONS_CODE){
-//            Intent intent = new  Intent(APP_PACKAGE_NAME);
-//            intent.putExtra("Notification Code", notificationCode);
-//            sendBroadcast(intent);
-//        }
+        SendNotificationDataToSheet sendNotificationDataToSheet =
+            new SendNotificationDataToSheet();
+        String appName = AppUtil.parsePackageName(AppUtil.getApplication().getPackageManager(),
+            notificationItem.getPackageName());
+        sendNotificationDataToSheet.execute(appName, notificationItem.getPackageName(),
+            notificationItem.getTime());
     }
 
 

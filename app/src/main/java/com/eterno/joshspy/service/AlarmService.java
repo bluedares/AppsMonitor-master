@@ -9,8 +9,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.eterno.appmonitor.data.DataManager;
 import com.eterno.joshspy.data.AppItem;
+import com.eterno.joshspy.data.DataManager;
 import com.eterno.joshspy.data.HistoryItem;
 import com.eterno.joshspy.db.DbHistoryExecutor;
 import com.eterno.joshspy.log.FileLogManager;

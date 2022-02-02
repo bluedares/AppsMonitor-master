@@ -49,11 +49,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.eterno.appmonitor.data.DataManager;
+import com.eterno.joshspy.R;
 import com.eterno.joshspy.BuildConfig;
 import com.eterno.joshspy.GlideApp;
-import com.eterno.joshspy.R;
+
 import com.eterno.joshspy.data.AppItem;
+import com.eterno.joshspy.data.DataManager;
 import com.eterno.joshspy.db.DbIgnoreExecutor;
 import com.eterno.joshspy.notification.NotificationMainActivity;
 import com.eterno.joshspy.service.AlarmService;
