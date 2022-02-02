@@ -25,6 +25,7 @@ public abstract class NotificationDatabase extends RoomDatabase {
         if (INSTANCE == null) {
           INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
               NotificationDatabase.class, "word_database")
+              .allowMainThreadQueries()
               .build();
         }
       }
