@@ -143,7 +143,9 @@
   **[] $VALUES;
   public *;
 }
--keepclassmembers class com.eterno.joshspy.helper.SendDataToSheet
--keepclassmembers class com.eterno.joshspy.helper.SendNotificationDataToSheet
+
+
+-keep  class com.eterno.joshspy.helper.SendDataToSheet.** { *; }
+-keep  class com.eterno.joshspy.data.** { *; }
 # for DexGuard only
 # -keepresourcexmlelements manifest/application/meta-data@value=GlideModule
