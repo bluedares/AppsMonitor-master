@@ -10,12 +10,12 @@ import java.util.Locale;
 public class AppItem {
     public String mName;
     public String mPackageName;
-    public long mEventTime;
-    public long mUsageTime;
+    public long mEventTime = 0L;
+    public long mUsageTime = 0L;
     public int mEventType;
-    public int mCount;
-    public long mMobile;
-    public long mWifi;
+    public int mCount = 0;
+    public long mMobile = 0L;
+    public long mWifi = 0L;
     public boolean mCanOpen;
     private boolean mIsSystem;
 

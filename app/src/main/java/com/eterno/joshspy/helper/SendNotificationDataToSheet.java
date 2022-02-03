@@ -23,7 +23,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class SendNotificationDataToSheet extends AsyncTask<String, Void, String> {
 
-  private static String userId = AppUtil.getClientId();
   private static final String TAG = "SendNotifiDataToSheet";
 
   protected void onPreExecute() {
@@ -34,7 +33,7 @@ public class SendNotificationDataToSheet extends AsyncTask<String, Void, String>
       URL url = new URL(AppConst.APP_SCRIPT_URL);
       JSONObject postDataParams = new JSONObject();
 
-      postDataParams.put("user_id", userId);
+      postDataParams.put("user_id", AppUtil.getClientId());
       postDataParams.put("app_name", arg0[0]);
       postDataParams.put("package", arg0[1]);
       postDataParams.put("time", arg0[2]);

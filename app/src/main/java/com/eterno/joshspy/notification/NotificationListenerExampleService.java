@@ -71,29 +71,30 @@ public class NotificationListenerExampleService extends NotificationListenerServ
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void onNotificationPosted(StatusBarNotification sbn){
+    public void onNotificationPosted(StatusBarNotification sbn) {
         Log.d(TAG, "onNotificationPosted : " + sbn.getId() + " pkg: " + sbn.getPackageName());
         Log.d(TAG, "onNotificationPosted : " + sbn.toString());
 
+        if (AppUtil.validatePkgName(sbn.getPackageName())) {
+            String date =
+                java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
 
-        String date =
-            java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+            NotificationItem notificationItem = new NotificationItem(sbn.getId(),
+                sbn.getPackageName(), sbn.getTag(), sbn.getKey(), sbn.getGroupKey(), date);
 
-        NotificationItem notificationItem = new NotificationItem(sbn.getId(),
-            sbn.getPackageName(), sbn.getTag(), sbn.getKey(), sbn.getGroupKey(), date);
-        notificationItem.setPosted(true);
-        Intent intent = new  Intent(APP_PACKAGE_NAME);
-        intent.putExtra(NOTIFICATION_DATA, notificationItem);
-        sendBroadcast(intent);
-        mRepository.insert(notificationItem);
-        SendNotificationDataToSheet sendNotificationDataToSheet =
-            new SendNotificationDataToSheet();
-        String appName = AppUtil.parsePackageName(AppUtil.getApplication().getPackageManager(),
-            notificationItem.getPackageName());
-        sendNotificationDataToSheet.execute(appName, notificationItem.getPackageName(),
-            notificationItem.getTime());
+            notificationItem.setPosted(true);
+            Intent intent = new Intent(APP_PACKAGE_NAME);
+            intent.putExtra(NOTIFICATION_DATA, notificationItem);
+            sendBroadcast(intent);
+            mRepository.insert(notificationItem);
+            SendNotificationDataToSheet sendNotificationDataToSheet =
+                new SendNotificationDataToSheet();
+            String appName = AppUtil.parsePackageName(AppUtil.getApplication().getPackageManager(),
+                notificationItem.getPackageName());
+            sendNotificationDataToSheet.execute(appName, notificationItem.getPackageName(),
+                notificationItem.getTime());
+        }
     }
-
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn){

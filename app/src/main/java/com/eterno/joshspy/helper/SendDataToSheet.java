@@ -1,10 +1,12 @@
 package com.eterno.joshspy.helper;
 
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.eterno.joshspy.AppConst;
+import com.eterno.joshspy.ui.MainActivity;
 import com.eterno.joshspy.util.AppUtil;
 
 import org.json.JSONObject;
@@ -23,8 +25,11 @@ import java.util.UUID;
 import javax.net.ssl.HttpsURLConnection;
 
 public class SendDataToSheet extends AsyncTask<String, Void, String> {
+  String reqType = "";
+  public SendDataToSheet(String reqType){
+    this.reqType = reqType;
+  }
 
-  private static final String userId = AppUtil.getClientId();
   private static final String TAG = "SendDataToSheet";
 
   protected void onPreExecute() {
@@ -35,13 +40,15 @@ public class SendDataToSheet extends AsyncTask<String, Void, String> {
       URL url = new URL(AppConst.APP_SCRIPT_URL);
       JSONObject postDataParams = new JSONObject();
 
-      postDataParams.put("user_id", userId);
+      postDataParams.put("user_id", AppUtil.getClientId());
       postDataParams.put("data_set", arg0[0]);
-      postDataParams.put("req_type", "OPEN");
+      postDataParams.put("req_type", reqType);
 
+      if(reqType == "OPEN"){
+        Log.d(TAG, " DDDDD "+reqType+"  ->  "+arg0[1]);
+      }
 
-
-      Log.d(TAG, postDataParams.toString());
+      Log.d(TAG, "  "+reqType+"  ->  "+postDataParams.toString());
 
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
       conn.setReadTimeout(15000 /* milliseconds */);
@@ -75,16 +82,23 @@ public class SendDataToSheet extends AsyncTask<String, Void, String> {
         in.close();
 
       } else {
-        Log.d(TAG,  ("false : " + responseCode));
+        Log.d(TAG,  "  "+reqType+"  ->  "+("false : " + responseCode));
       }
     } catch (Exception e) {
-      Log.d(TAG,  ("Exception: " + e.getMessage()));
+      Log.d(TAG,  "  "+reqType+"  ->  "+("Exception: " + e.getMessage()));
     }
    return "";
   }
 
   @Override
   protected void onPostExecute(String result) {
+
+    if(reqType == "USAGE"){
+      Log.d(TAG, "COMPLETEDD");
+      Intent i = new Intent(AppUtil.getApplication(), MainActivity.class);
+      i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+      AppUtil.getApplication().startActivity(i);
+    }
 
 
   }

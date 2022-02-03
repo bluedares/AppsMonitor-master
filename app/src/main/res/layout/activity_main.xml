@@ -103,4 +103,15 @@
         android:textStyle="bold" />
 
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/user_id"
+        android:text="user ID"
+        android:textSize="12dp"
+        android:background="@color/gray"
+        android:layout_alignParentBottom="true"
+        android:layout_centerVertical="true"
+        android:textAlignment="center"/>
+
 </RelativeLayout>

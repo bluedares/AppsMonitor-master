@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         mEnableJoshSpy.setOnClickListener(view ->{
             checkPermissions();
         });
+        ((TextView) findViewById(R.id.user_id)).setText("User ID : "+AppUtil.getClientId());
         mAdapter = new MyAdapter();
 
         mList = findViewById(R.id.list);

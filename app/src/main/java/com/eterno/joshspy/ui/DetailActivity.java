@@ -7,6 +7,7 @@ import android.app.usage.NetworkStatsManager;
 import android.app.usage.UsageEvents;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
@@ -25,6 +26,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.transition.Explode;
@@ -49,6 +52,7 @@ import com.eterno.joshspy.data.DataManager;
 import com.eterno.joshspy.R;
 import com.eterno.joshspy.GlideApp;
 import com.eterno.joshspy.notification.NotificationMainActivity;
+import com.eterno.joshspy.util.PreferenceUtils;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -87,7 +91,6 @@ public class DetailActivity extends AppCompatActivity {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         getWindow().setExitTransition(new Explode());
         setContentView(R.layout.activity_detail);
-
         mProgress = findViewById(R.id.progressBar);
 
         ActionBar actionBar = getSupportActionBar();
