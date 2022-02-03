@@ -112,7 +112,6 @@
         android:background="@color/gray"
         android:layout_alignParentBottom="true"
         android:layout_centerVertical="true"
-        android:textAlignment="center"
-        /
+        android:textAlignment="center"/>
 
 </RelativeLayout>
