@@ -5,14 +5,16 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.provider.Settings;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
 
+
+import com.eterno.joshspy.AppConst;
 import com.eterno.joshspy.R;
 import com.eterno.joshspy.R;
 
@@ -36,7 +38,15 @@ public final class AppUtil {
     }
 
     public static String getClientId() {
-        return UUID.randomUUID().toString();
+        String userId = PreferenceUtils.getStringFromPref(getApplication(), AppConst.APP_USER_ID);
+        if (userId.equals("")) {
+            Context context = getApplication();
+            userId =  Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+            PreferenceUtils.writePreferenceValue(getApplication(), AppConst.APP_USER_ID, userId);
+            Log.d("APP UTIL","set user id"+userId);
+        }
+
+        return userId;
     }
 
 
@@ -222,6 +232,24 @@ public final class AppUtil {
         int exp = (int) (Math.log(bytes) / Math.log(unit));
         String pre = "KMGTPE".charAt(exp - 1) + "";
         return String.format(Locale.getDefault(), "%.1f %sB", bytes / Math.pow(unit, exp), pre);
+    }
+
+    public static boolean validatePkgName(String mPackageName) {
+        switch (mPackageName) {
+            case "in.mohalla.video":
+            case "in.mohalla.video.lite":
+            case "com.funnypuri.client":
+            case "com.next.innovation.takatak":
+            case "com.next.innovation.takatak.lite":
+            case "video.tiki":
+            case "com.instagram.android":
+            case "com.facebook.katana":
+            case "com.eterno.shortvideos":
+            case "com.eterno":
+                return true;
+            default:
+                return false;
+        }
     }
 }
 

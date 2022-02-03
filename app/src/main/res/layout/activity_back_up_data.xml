@@ -9,7 +9,9 @@
 
     <LinearLayout
         android:id="@+id/bkp_data_container"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -23,15 +25,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Backing up your data"
-            android:textSize="18dp" />
+            android:textSize="24dp" />
 
-        <TextView
-            android:id="@+id/items"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_height="300dp"
+            android:scrollbars="vertical"
+                android:fillViewport="true">
+            <TextView
 
+                android:id="@+id/progress"
+                android:textSize="14dp"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:inputType="textMultiLine"
+                android:text="Fetching Usage data"
+                android:maxWidth="300dp"
+                android:scrollbars = "vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </ScrollView>
         <ProgressBar
-            android:id="@+id/progress"
+            android:layout_marginTop="10dp"
             android:layout_width="50dp"
             android:layout_height="50dp"/>
     </LinearLayout>

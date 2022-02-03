@@ -10,15 +10,14 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.eterno.joshspy.data.DataManager;
 import com.eterno.joshspy.R;
 import com.eterno.joshspy.data.AppItem;
 import com.eterno.joshspy.data.SheetAppItem;
 import com.eterno.joshspy.data.SheetEventItem;
-import com.eterno.joshspy.helper.SendAppDataToSheet;
 import com.eterno.joshspy.helper.SendDataToSheet;
-import com.eterno.joshspy.helper.SendFGServiceDataToSheet;
 import com.eterno.joshspy.notification.NotificationRepo;
 import com.eterno.joshspy.ui.MainActivity;
 import com.eterno.joshspy.util.AppUtil;
@@ -42,11 +41,14 @@ public class BackUpDataActivity extends AppCompatActivity {
   HashMap<String, Integer> fgServiceCount = new HashMap<>();
   private SharedPreferences sharedPref;
 
+  private TextView mProgress;
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_back_up_data);
+    mProgress = findViewById(R.id.progress);
     sharedPref = this.getPreferences(Context.MODE_PRIVATE);
     sharedPref.getLong(LAST_UPDATED_TIME, 0L);
     notificationRepo = new NotificationRepo(this.getApplication());
@@ -58,7 +60,8 @@ public class BackUpDataActivity extends AppCompatActivity {
       cal.set(Calendar.MINUTE, 0);
       cal.set(Calendar.SECOND, 0);
       cal.set(Calendar.MILLISECOND, 0);
-      Log.e(TAG, "first launch, backup from " + AppUtil.formatTimeStamp(cal.getTimeInMillis()));
+      Log.d(TAG, "first launch, backup from " + AppUtil.formatTimeStamp(cal.getTimeInMillis()));
+      lastUpdatedTime = cal.getTimeInMillis();
     }
     new MyAsyncTask().execute(2);
   }
@@ -67,10 +70,14 @@ public class BackUpDataActivity extends AppCompatActivity {
   private void getAndPostAppSpecificData(String mPackageName, SheetAppItem sheetAppItem) {
     List<AppItem> appItems = DataManager.getInstance().getTargetAppTimelineRange(this,
         mPackageName, lastUpdatedTime, timeNow);
+    if (appItems == null || appItems.size() == 0) {
+      return;
+    }
     List<SheetEventItem> sNewList = new ArrayList<>();
 
     long prevFgTime = 0l;
-    Log.e(TAG, "Processing " + mPackageName + "  " + (getPackageManager() == null));
+    setProgress("AE - " + appItems.get(0).mName);
+    Log.d(TAG, "Processing " + mPackageName + "  " + (getPackageManager() == null));
 
 
     for (AppItem item : appItems) {
@@ -86,9 +93,20 @@ public class BackUpDataActivity extends AppCompatActivity {
 
     Gson gson = new Gson();
     String json = gson.toJson(sNewList);
+    Log.d(TAG, "send data size - " + mPackageName + "   " +sNewList.size());
     Log.d(TAG, "  " + mPackageName + "   " + json);
-    new SendDataToSheet().execute(json);
+    try {
+      new SendDataToSheet("OPEN").execute(json, mPackageName);
+    } catch (Exception e) {
+      Log.e(TAG, "errror open" + e.getMessage());
+    }
+  }
 
+  private void setProgress(String progress) {
+    mProgress.post(() -> {
+      String str = mProgress.getText().toString();
+      mProgress.setText(str + "\n" + progress);
+    });
   }
 
   @SuppressLint("StaticFieldLeak")
@@ -96,34 +114,45 @@ public class BackUpDataActivity extends AppCompatActivity {
 
     @Override
     protected void onPreExecute() {
-      HashMap<String, Integer> fgAppItems = DataManager.getInstance()
-          .getAppsFGServiceRange(getApplicationContext(), lastUpdatedTime, timeNow);
-      Log.e(TAG, "Foreground service  No of apps =  " + fgAppItems.size());
-
-      for (String item : fgAppItems.keySet()) {
-        Log.e(TAG , "Get events for Foreground service  " + item);
-        if (validatePkgName(item)) {
-          getAndPostFGAppSpecificData(item);
-        }
-      }
-      Log.e(TAG, "Foreground service  completed");
     }
 
     @Override
     protected List<AppItem> doInBackground(Integer... integers) {
+      setProgress("**********    Fetching Foreground services    **********");
+      HashMap<String, Integer> fgAppItems = DataManager.getInstance()
+          .getAppsFGServiceRange(getApplicationContext(), lastUpdatedTime, timeNow);
+      Log.d(TAG, "Foreground service  No of apps =  " + fgAppItems.size());
+
+      //setProgress("Fetching FG services No of apps = " + fgAppItems.size());
+      for (String item : fgAppItems.keySet()) {
+        Log.d(TAG, "Get events for Foreground service  " + item);
+        if (AppUtil.validatePkgName(item)) {
+          setProgress("FG - " + item);
+          getAndPostFGAppSpecificData(item);
+        }
+      }
+      setProgress("Fetching FG services Completed");
+      Log.d(TAG, "Foreground service  completed");
       return DataManager.getInstance().getAppsRange(getApplicationContext(), 2,
           lastUpdatedTime, timeNow);
     }
 
     @Override
     protected void onPostExecute(List<AppItem> appItems) {
-      Log.e(TAG, "No of app events =  " + appItems.size());
-      List<SheetEventItem> fgServiceNewList = new ArrayList<>();
+
+      setProgress("**********     Fetching App  Data      **********");
+      if(appItems == null || appItems.size() == 0){
+        goToMainActivity();
+        Log.e(TAG , "size 0 return to main ");
+        return;
+      }
+      Log.d(TAG, "No of app events =  " + appItems.size());
+     // setProgress("Fetching App  Events  " + appItems.size()+"");
       for (AppItem item : appItems) {
         if (item.mUsageTime <= 0) {
           continue;
         }
-        if (validatePkgName(item.mPackageName)) {
+        if (AppUtil.validatePkgName(item.mPackageName)) {
           setNotiCountForApp(item.mPackageName);
         }
       }
@@ -132,7 +161,7 @@ public class BackUpDataActivity extends AppCompatActivity {
         if (item.mUsageTime <= 0) {
           continue;
         }
-        if (validatePkgName(item.mPackageName)) {
+        if (AppUtil.validatePkgName(item.mPackageName)) {
 
           int mNotiCount = 0;
           if (notiCountList.containsKey(item.mPackageName)) {
@@ -162,11 +191,19 @@ public class BackUpDataActivity extends AppCompatActivity {
         Gson gson = new Gson();
         String json = gson.toJson(sheetAppItems);
         Log.d(TAG, "DDDD Updating sheet app items   " + json);
-        new SendAppDataToSheet().execute(json);
+        try {
+          setProgress("********   Sending Total App usage data   ********");
+          new SendDataToSheet("USAGE").execute(json);
+        } catch (Exception e) {
+          Log.e(TAG, "error usage" + e.getMessage());
+        }
+      } else {
+        setLastUpdated(timeNow);
+        goToMainActivity();
       }
-      Log.e(TAG, "Backup completed");
+      Log.d(TAG, "Backup completed");
       setLastUpdated(timeNow);
-      goToMainActivity();
+
     }
   }
 
@@ -177,23 +214,6 @@ public class BackUpDataActivity extends AppCompatActivity {
     });
   }
 
-  private boolean validatePkgName(String mPackageName) {
-    switch (mPackageName) {
-      case "in.mohalla.video":
-      case "in.mohalla.video.lite":
-      case "com.funnypuri.client":
-      case "com.next.innovation.takatak":
-      case "com.next.innovation.takatak.lite":
-      case "video.tiki":
-      case "com.instagram.android":
-      case "com.facebook.katana":
-      case "com.eterno.shortvideos":
-      case "com.eterno":
-        return true;
-      default: return false;
-
-    }
-  }
 
   private void goToMainActivity() {
     Intent i = new Intent(BackUpDataActivity.this, MainActivity.class);
@@ -215,6 +235,9 @@ public class BackUpDataActivity extends AppCompatActivity {
   private void getAndPostFGAppSpecificData(String mPackageName) {
     List<AppItem> appItems = DataManager.getInstance().getTargetAppFGTimelineRange(this,
         mPackageName, lastUpdatedTime, timeNow);
+    if (appItems == null || appItems.size() == 0) {
+      return;
+    }
     List<SheetEventItem> sNewList = new ArrayList<>();
 
     long prevFgTime = 0l;
@@ -228,6 +251,11 @@ public class BackUpDataActivity extends AppCompatActivity {
     fgServiceCount.put(mPackageName, sNewList.size());
     Gson gson = new Gson();
     String FGSjson = gson.toJson(sNewList);
-    new SendFGServiceDataToSheet().execute(FGSjson);
+    try {
+      Log.e(TAG, "Send Foreground data" + FGSjson);
+      new SendDataToSheet("SERVICE").execute(FGSjson);
+    } catch (Exception e) {
+      Log.e(TAG, "error usage" + e.getMessage());
+    }
   }
 }
